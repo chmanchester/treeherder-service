@@ -40,7 +40,8 @@ class HgPushlogTransformerMixin(object):
             rev_hash_components = []
 
             # iterate over the revisions
-            for change in push['changesets']:
+            # we only want to ingest the last 21 revisions.
+            for change in push['changesets'][-21:]:
                 revision = dict()
                 # we need to get the short version of a revision
                 # because buildapi doesn't provide the long one
