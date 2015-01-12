@@ -242,7 +242,8 @@ class JobsModel(TreeherderModelBase):
         )
         return data
 
-    def get_job_list(self, offset, limit, full=True, conditions=None):
+    def get_job_list(self, offset, limit, full=True,
+                     conditions=None, exclusion_profile=None):
         """
         Retrieve a list of jobs. It's mainly used by the restful api to list
         the jobs. The conditions parameter is a dict containing a set of
@@ -256,6 +257,30 @@ class JobsModel(TreeherderModelBase):
         replace_str, placeholders = self._process_conditions(
             conditions, self.INDEXED_COLUMNS['job']
         )
+
+        if exclusion_profile:
+            print "applying exclusion profile"
+            try:
+                if exclusion_profile is "default":
+                    profile = ExclusionProfile.objects.get(
+                        is_default=True
+                    )
+                else:
+                    profile = ExclusionProfile.objects.get(
+                        name=exclusion_profile
+                    )
+                signatures = profile.flat_exclusion[self.project]
+                replace_str += " AND j.signature NOT IN ({0})".format(
+                    ",".join(["%s"] * len(signatures))
+                )
+                placeholders += signatures
+            except KeyError:
+                # this repo/project has no hidden signatures
+                pass
+            except ExclusionProfile.DoesNotExist:
+                # Either there's no default profile setup or the profile
+                # specified is not availble
+                pass
 
         repl = [self.refdata_model.get_db_name(), replace_str]
 

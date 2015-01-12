@@ -593,9 +593,6 @@
                     ON j.device_id = d.id
                   WHERE 1
                   REP1
-                  ORDER BY
-                    rs.push_timestamp DESC,
-                    mp.platform ASC
                   ",
 
             "host":"read_host"
