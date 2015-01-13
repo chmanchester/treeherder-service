@@ -37,11 +37,11 @@ def pytest_sessionstart(session):
     sys.path.append(dirname(dirname(__file__)))
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "treeherder.settings")
     from django.conf import settings
-    from django.test.simple import DjangoTestSuiteRunner
+    from django.test.runner import DiscoverRunner
 
     # we don't actually let Django run the tests, but we need to use some
     # methods of its runner for setup/teardown of dbs and some other things
-    session.django_runner = DjangoTestSuiteRunner()
+    session.django_runner = DiscoverRunner()
     # this provides templates-rendered debugging info and locmem mail storage
     session.django_runner.setup_test_environment()
     # support custom db prefix for tests for the main datazilla datasource

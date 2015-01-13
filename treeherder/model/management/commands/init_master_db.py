@@ -69,8 +69,6 @@ Type 'yes' to continue, or 'no' to cancel: """ % connection.settings_dict['NAME'
                     cursor.close()
                 print "Sql files executed successfully."
 
-            #flush all the apps not under south
-            call_command("syncdb", interactive=False,)
             #fake the first migration because manually generated
             call_command("migrate", 'model', '0001_initial', fake=True)
             #safely apply all the other migrations
